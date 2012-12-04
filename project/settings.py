@@ -4,7 +4,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('iSchool Zambia', 'support@ischool.zm')
+    ('test', 'test@example.com')
 )
 
 MANAGERS = ADMINS
@@ -20,53 +20,7 @@ DATABASES = {
 		'PASSWORD': '',
 		'PORT': '',
 	},
-	'other': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(os.path.dirname(__file__), 'other.db'),
-		'HOST': '',
-		'USER': '',
-		'PASSWORD': '',
-		'PORT': '',
-	},
 }
-
-class SchoolDatabaseRouter(object):
-    """A router which directs database queries to either the
-    license or the school database, depending on the model (table)."""
-
-    def db_for_read(self, model, **hints):
-    	# print "read database for %s is %s" % (model, model._meta.db_tablespace)
-    	from django.contrib.auth.models import Permission
-    	# if model == Permission:
-    	#	import pdb; pdb.set_trace()
-    	return model._meta.db_tablespace or 'default'
-
-    def db_for_write(self, model, **hints):
-    	# print "write database for %s is %s" % (model, model._meta.db_tablespace)
-    	return model._meta.db_tablespace or 'default'
-
-    def allow_relation(self, obj1, obj2, **hints):
-    	# return (obj1._meta.db_tablespace == obj2._meta.db_tablespace)
-    	return True
-
-    def allow_syncdb(self, db, model):
-    	# We must allow MigrationHistory to sync in all databases:
-    	# https://groups.google.com/forum/?fromgroups=#!topic/south-users/Sre6bO9aJzo
-    	from south.models import MigrationHistory
-    	if False and model == MigrationHistory:
-    		allowed = True
-    	else:
-			if model._meta.db_tablespace:
-				tablespace = model._meta.db_tablespace
-			else:
-				tablespace = 'default'
-
-			allowed = (db == tablespace)
-		
-    	# print "allow syncdb for %s in %s: %s" % (model, db, allowed)
-    	return allowed
-
-DATABASE_ROUTERS = [SchoolDatabaseRouter()]
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -167,7 +121,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'south',
     'demo',
 ]
 
@@ -218,14 +171,4 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
     'django.contrib.auth.hashers.CryptPasswordHasher',
 )
-
-# AUTHENTICATION_BACKENDS = ('users.auth.IschoolUserBackend',)
-
-# tasks.py expects to find local_settings.py so the database stuff is there
-# from local_settings import *
-
-if False and DEBUG:
-	MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-	INTERNAL_IPS = ('127.0.0.1',)
-	INSTALLED_APPS += ('debug_toolbar',)
 
