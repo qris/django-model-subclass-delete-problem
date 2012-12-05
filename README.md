@@ -1,4 +1,4 @@
-h1. Model subclass not in INSTALLED_APPS incorrectly collected during object deletion
+# Model subclass not in INSTALLED_APPS incorrectly collected during object deletion
 
 Reproduces a [bug](https://code.djangoproject.com/ticket/19422) in
 Django where you have a model that's installed (in INSTALLED_APPS), and a
