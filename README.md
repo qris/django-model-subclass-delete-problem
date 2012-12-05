@@ -1,4 +1,12 @@
-mple, if there is a Session subclass somewhere in your code, but not in an INSTALLED_APPS models.py, then the following code will fail:
+h1. Model subclass not in INSTALLED_APPS incorrectly collected during object deletion
+
+Reproduces a [bug](https://code.djangoproject.com/ticket/19422) in
+Django where you have a model that's installed (in INSTALLED_APPS), and a
+subclass that's NOT installed (so it shouldn't be used), but deleting an
+instance of the parent model causes a crash.
+
+For example, if there is a Session subclass somewhere in your code, but
+not in an INSTALLED_APPS models.py, then the following code will fail:
 
 	s = Session()
 	from datetime import datetime
@@ -31,7 +39,11 @@ It fails here, when trying to delete objects:
 	    return Database.Cursor.execute(self, query, params)
 	DatabaseError: no such table: utility_sessionwithextrafield
 
-It seems that the model was registered just by being loaded, and associated itself with a parent model (superclass), but its database table never got created because it wasn't in INSTALLED_APPS.
+It seems that the model was registered just by being loaded, and
+associated itself with a parent model (superclass), but its database table
+never got created because it wasn't in INSTALLED_APPS.
 
-So these two should be consistent with each other: either we only register models for INSTALLED_APPS, or we create database tables for all registered models even if they're not in INSTALLED_APPS.
+So these two should be consistent with each other: either we only register
+models for INSTALLED_APPS, or we create database tables for all registered
+models even if they're not in INSTALLED_APPS.
 
